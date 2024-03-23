@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+  <html>
+    <head>
+      <title>
+        tic-tac-toe!!
+      </title>
+      <style>
+        body {
+          font-size: 36px;
+          font-family: arial;
+        }
+
+        p {
+          text-align: center;
+
+          margin-bottom: 0;
+          margin-top: 24px;
+        }
+        
+        div {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+        }
+        .main-div {
+          display: flex;
+          flex-direction: column;
+
+          border: none;
+
+          justify-content: center;
+          align-items: center;
+        }
+        .title-div {
+          grid-template-columns: 1fr;
+
+          border: none;
+
+          margin-bottom: 0;
+          margin-top: 0;
+        }
+        .main-game-div {
+          display: flex;
+          flex-direction: column;
+
+          border: none;
+
+          margin-top: 36px;
+        }
+        .title-div,
+        .main-game-div,
+        .top-game-div,
+        .mid-game-div,
+        .bottom-game-div {
+          max-width: 750px;
+        }
+
+        .player-text {
+          font-size: 14px;
+        }
+
+        button {
+          font-size: 108px;
+          color: white;
+          
+          background-color: rgb(0, 0, 0);
+
+          border: 4px solid rgb(255, 255, 255);
+
+          height: 200px;
+          width: 200px;
+
+          cursor: pointer;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="main-div">
+        <div class="title-div">
+          <p>tic tac toe!</p>
+          <p class="player-text js-player-text">player X's turn</p>
+        </div>
+  
+        <div class="main-game-div">
+          <div class="top-game-div">
+            <button class="js-button-1"></button>
+            <button class="js-button-2"></button>
+            <button class="js-button-3"></button>
+          </div>
+          <div class="mid-game-div">
+            <button class="js-button-4"></button>
+            <button class="js-button-5"></button>
+            <button class="js-button-6"></button>
+          </div>
+          <div class="bottom-game-div">
+            <button class="js-button-7"></button>
+            <button class="js-button-8"></button>
+            <button class="js-button-9"></button>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        const gameArray = {
+          topGame: [],
+          midGame: [],
+          bottomGame: []
+        };
+
+        let point = 0;
+        let squaresOccupied = 1;
+        let win = false;
+        let checkPlayer = 'X';
+
+        let playerTurn = 'X';
+        const playerText = document.querySelector('.js-player-text');
+       
+        function playGame(num) {  
+          const button =  document.querySelector(`.js-button-${num}`);
+          //HOLY CRAP, I FINALLY FOUND A WAY TO NOT USE REMOVEEVENTLISTENER HAHA
+          
+          if (squaresOccupied === 9 && win === false) {
+            setInterval(() => playerText.innerHTML = 'Tie.', 100);
+          }
+          //console.log(`squares occupied: ${squaresOccupied}`);
+
+          if (button.innerHTML === 'X' || button.innerHTML === 'O' || win) {
+            console.log('change not received');
+            return;
+          }
+
+          squaresOccupied++;
+
+          if (playerTurn === 'X') {
+            button.innerHTML = playerTurn;
+            checkArray(num, playerTurn);
+            changePlayer('X');
+            return;
+          }
+          if (playerTurn === 'O') {
+            button.innerHTML = playerTurn;
+            checkArray(num, playerTurn);
+            changePlayer('O');
+            return;
+          }
+        }
+
+        function changePlayer(player) {
+          console.log(`${player} played`);
+          if (playerTurn === 'X') {
+            playerTurn = 'O';
+          } else {
+            playerTurn = 'X';
+          }
+          
+          playerText.innerHTML = `player ${playerTurn}'s turn`;
+        }
+
+        function checkArray(button, player) {
+          if (button <= 3) {
+            gameArray.topGame[button] = player;
+            //console.log('top played')
+            checkWin('top');
+          }
+          if (button <= 6 && button >= 4) {
+            gameArray.midGame[button] = player;
+            //console.log('mid played')
+            checkWin('mid');
+          }
+          if (button <= 9 && button >= 7) {
+            gameArray.bottomGame[button] = player;
+            //console.log('bottom played')
+            checkWin('bottom');
+          }
+          //console.log(topGame);
+          //console.log(midGame);
+          //console.log(bottomGame);
+        }
+
+        function checkWin() {   
+          //first, check for row points
+          checkPlayer = 'X';
+          rowWinCheck(checkPlayer);
+
+          //check for column points
+          checkPlayer = 'X';
+          columnWinCheck(checkPlayer);
+
+          //check for diagonal points 
+          checkPlayer = 'X';
+          diagonalWinCheck(checkPlayer);
+        }
+
+        function diagonalWinCheck(checkPlayer) {
+          for (let i = 0; i < 2; i ++) { 
+            for (let i = 1; i <= 9; i += 4) {
+              if (gameArray.topGame[i] === checkPlayer) {
+                point++;
+              }
+              if (gameArray.midGame[i] === checkPlayer) {
+                point++;
+              }
+              if (gameArray.bottomGame[i] === checkPlayer) {
+                point++;
+              }
+              ifWin(point, checkPlayer);
+            }
+            console.log(`${checkPlayer} left-right: ${point}`);
+            point = 0;
+
+            for (let i = 3; i <= 7; i += 2) {
+              if (gameArray.topGame[i] === checkPlayer) {
+                point++;
+              }
+              if (gameArray.midGame[i] === checkPlayer) {
+                point++;
+              }
+              if (gameArray.bottomGame[i] === checkPlayer) {
+                point++;
+              }
+              ifWin(point, checkPlayer);
+            }
+            console.log(`${checkPlayer} right-left: ${point}`);
+            point = 0;
+            //then, O points
+            checkPlayer = 'O';
+          }
+        }
+
+        function rowWinCheck(checkPlayer) {
+          for (let i = 0; i < 2; i ++) {
+            //first, check for X row points
+            for (let i = 1; i <= 3; i++) {
+              if (gameArray.topGame[i] === checkPlayer) {
+                point++;
+                console.log(`${checkPlayer} top: ${point}`);
+              }
+              ifWin(point, checkPlayer);
+            }
+            point = 0;
+            for (let i = 4; i <= 6; i++) {
+              if (gameArray.midGame[i] === checkPlayer) {
+                point++;
+                console.log(`${checkPlayer} mid: ${point}`);
+              }
+              ifWin(point, checkPlayer);
+            }
+            point = 0;
+            for (let i = 7; i <= 9; i++) {
+              if (gameArray.bottomGame[i] === checkPlayer) {
+                point++;
+                console.log(`${checkPlayer} bot: ${point}`);
+              }
+              ifWin(point, checkPlayer);
+            }
+            point = 0;
+            //then, O points
+            checkPlayer = 'O';
+          }
+        }
+
+        function columnWinCheck(checkPlayer) {
+          for (let i = 0; i < 2; i ++) { 
+            for (let i = 1; i <= 9; i+=3 ) {
+              if (gameArray.topGame[i] === checkPlayer) {
+                point++;
+              }
+              if (gameArray.midGame[i] === checkPlayer) {
+                point++;
+              }
+              if (gameArray.bottomGame[i] === checkPlayer) {
+                point++;
+              }
+              ifWin(point, checkPlayer);
+            }
+            console.log(`${checkPlayer} left: ${point}`);
+            point = 0;
+            for (let i = 2; i <= 9; i+=3 ) {
+              if (gameArray.topGame[i] === checkPlayer) {
+                point++;
+              }
+              if (gameArray.midGame[i] === checkPlayer) {
+                point++;
+              }
+              if (gameArray.bottomGame[i] === checkPlayer) {
+                point++;
+              }
+              ifWin(point, checkPlayer);
+            }
+            console.log(`${checkPlayer} mid: ${point}`);
+            point = 0;
+            for (let i = 3; i <= 9; i+=3 ) {
+              if (gameArray.topGame[i] === checkPlayer) {
+                point++;
+              }
+              if (gameArray.midGame[i] === checkPlayer) {
+                point++;
+              }
+              if (gameArray.bottomGame[i] === checkPlayer) {
+                point++;
+              }
+              ifWin(point, checkPlayer);
+            }
+            console.log(`${checkPlayer} right: ${point}`);
+            point = 0;
+            //then, O points
+            checkPlayer = 'O';
+          }
+        }
+
+        function ifWin(point, checkPlayer) {
+          //check if points is 3
+          // 3 points = win!
+          if (point === 3) {
+            console.log(`you  win, ${checkPlayer}!`);
+            setInterval(() => playerText.innerHTML = `${checkPlayer} won!`, 100);
+            win = true;
+            return;
+          }
+        }
+        
+        for (let i = 1; i < 10; i++) {
+          document.querySelector(`.js-button-${i}`).addEventListener('click', () => playGame(i));
+        }
+
+        /*
+        document.querySelector('.js-button-1').addEventListener('click', () => playGame(1));
+        document.querySelector('.js-button-2').addEventListener('click', () => playGame(2));
+        document.querySelector('.js-button-3').addEventListener('click', () => playGame(3));
+        document.querySelector('.js-button-4').addEventListener('click', () => playGame(4));
+        document.querySelector('.js-button-5').addEventListener('click', () => playGame(5));
+        document.querySelector('.js-button-6').addEventListener('click', () => playGame(6));
+        document.querySelector('.js-button-7').addEventListener('click', () => playGame(7));
+        document.querySelector('.js-button-8').addEventListener('click', () => playGame(8));
+        document.querySelector('.js-button-9').addEventListener('click', () => playGame(9));
+        */
+
+      </script>
+
+    </body>
+  </html>
