@@ -1,2 +1,3 @@
-# tic-tac-toe
-My first JavaScript project.
+**☑️ A web-based tic-tac-toe game**
+
+My first independent Javascript project.
