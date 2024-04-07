@@ -1,3 +1,3 @@
-**☑️ A web-based tic-tac-toe game.**
+**☑️ A web-based tic-tac-toe game**
 
 My first independent Javascript project.
